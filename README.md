@@ -5,7 +5,7 @@
 
 1.在项目Module的`build.gradle`中添加依赖
 
-`compile 'com.code4a:retrofit-util:0.0.5'`
+`compile 'com.code4a:retrofit-util:1.0.5'`
 
 2.创建RetrofitManager对象
 
@@ -147,7 +147,7 @@ void httpGetResponseBody(){
         });
     ```
 
-#### 还可用作HTTPS请求，可用默认SSLHelper，未校验证书，可以继承该类，通过`setSSLHelper(SSLHelper sslHelper)`实现自定义ssl规则
+#### 还可用作HTTPS请求，可用默认SSLHelper，未校验证书，可以实现SSLInterface，通过`setSSLHelper(SSLInterface sslHelper)`实现自定义ssl规则
 
 ### 致谢
 
