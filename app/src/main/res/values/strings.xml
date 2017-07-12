@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">NbaEvent</string>
+    <string name="load_error_msg"><![CDATA[>_< 加载失败...]]></string>
+</resources>
