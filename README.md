@@ -12,16 +12,12 @@
 ```
 RetrofitManager retrofitManager;
 
-GankIoManager() {
-    Map<String, String> headerMap = new HashMap<>();
-    headerMap.put("Content-Type", "application/json");
-    headerMap.put("Accept", "application/json");
+public Code4aApiImpl() {
     retrofitManager = new RetrofitManager.Builder()
-            .setBaseUrl(BASE_RUL)
-            .setTransferDataType(RetrofitManager.Builder.TransferDataType.GSON)
-            .setHttpHeaderMap(headerMap)
-            .setHttpType(RetrofitManager.Builder.HttpType.HTTP)
+            .setBaseUrl(SimpleApi.CODE4A_API)
             .setTimeoutSec(15)
+            .setTransferDataType(RetrofitManager.Builder.TransferDataType.GSON)
+            .setHttpHeaderMap(HttpUtil.getJsonHeaderMap())
             .build();
 }
 ```
@@ -147,7 +143,56 @@ void httpGetResponseBody(){
         });
     ```
 
+详细用法可参看simpleapi
+
 #### 还可用作HTTPS请求，可用默认SSLHelper，未校验证书，可以实现SSLInterface，通过`setSSLHelper(SSLInterface sslHelper)`实现自定义ssl规则
+
+1.创建可进行https操作的RetrofitManager
+
+```
+RetrofitManager retrofitManager;
+
+    AndLinkUserNetImpl() {
+        retrofitManager = new RetrofitManager.Builder()
+                .setBaseUrl(AndLinkApi.ANDLINK_USER_ROOTURL)
+                .setTimeoutSec(15)
+                .setTransferDataType(RetrofitManager.Builder.TransferDataType.GSON)
+                .setHttpHeaderMap(HttpUtil.getJsonHeaderMap())
+                .setHttpType(RetrofitManager.Builder.HttpType.HTTPS)
+                .setSSLHelper(new SSLImpl())
+                .build();
+//        使用自定义证书校验的https请求
+//        retrofitManager = new RetrofitManager.Builder()
+//                .setBaseUrl(AndLinkApi.ANDLINK_USER_ROOTURL)
+//                .setContext(context)
+//                .setTimeoutSec(15)
+//                .setTransferDataType(RetrofitManager.Builder.TransferDataType.GSON)
+//                .setHttpHeaderMap(HttpUtil.getJsonHeaderMap())
+//                .setHostnameVerifiers(AndLinkApi.HOSTURLS)
+//                .setAssetCertificateName(AndLinkApi.CERTIFICATE_NAME)
+//                .setHttpType(RetrofitManager.Builder.HttpType.HTTPS)
+//                .build();
+    }
+```
+
+2.请求接口定义
+
+```
+@POST(AndLinkApi.ANDLINK_PLATFORMURL + "user/login")
+Observable<BaseResponseBean<ResponseLoginUserBean>> aluLogin(@Body RequestLoginUserBean requestLoginUserBean);
+```
+
+3.请求封装和转换
+
+```
+@Override
+public Subscription andLinkUser_Login(RequestLoginUserBean requestLoginUserBean, RxSubscriber<ResponseLoginUserBean> rxSubscriber) {
+    return createUserService()
+            .aluLogin(requestLoginUserBean)
+            .compose(RxHelper.<ResponseLoginUserBean>handleResult())
+            .subscribe(rxSubscriber);
+}
+```
 
 ### 致谢
 
