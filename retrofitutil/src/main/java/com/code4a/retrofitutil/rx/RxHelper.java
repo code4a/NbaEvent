@@ -6,6 +6,8 @@ import com.code4a.retrofitutil.exception.ApiFailedHasData;
 import com.code4a.retrofitutil.exception.ApiSuccessNoData;
 import com.code4a.retrofitutil.utils.LogUtil;
 
+import java.util.Iterator;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -19,6 +21,26 @@ import rx.schedulers.Schedulers;
 public class RxHelper {
 
     static final String TAG = RxHelper.class.getSimpleName();
+
+    /**
+     * 对结果进行预处理
+     *
+     * @param rxSwitcher 异步变换器
+     * @param <T> 需要变换的泛型
+     * @param <R> 变换完成之后的泛型
+     * @return 变换器
+     */
+    public static <T, R> Observable.Transformer<T, R> handleResult(final RxSwitcher<T, R> rxSwitcher) {
+        return new Observable.Transformer<T, R>(){
+            @Override
+            public Observable<R> call(Observable<T> tObservable) {
+                return tObservable.map(rxSwitcher)
+                        .subscribeOn(Schedulers.computation())
+                        .unsubscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread());
+            }
+        };
+    }
 
     /**
      * 对结果进行预处理

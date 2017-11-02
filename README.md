@@ -5,7 +5,7 @@
 
 1.在项目Module的`build.gradle`中添加依赖
 
-`compile 'com.code4a:retrofit-util:1.0.5'`
+`compile 'com.code4a:retrofit-util:1.0.6'`
 
 2.创建RetrofitManager对象
 
