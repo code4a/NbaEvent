@@ -1,6 +1,7 @@
 package com.code4a.retrofitutil.rx;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -30,7 +31,7 @@ public class RxSchedulersHelper {
      * @param <R> 变换结果的泛型
      * @return 事件订阅，可用于拦截事件
      */
-    public static <T, R> Subscription changeDataList(Iterable<? extends T> iterable, RxSwitcher<T, R> rxSwitcher, RxSubscriber<R> subscriber) {
+    public static <T, R> Subscription changeDataList(Iterable<? extends T> iterable, RxSwitcher<T, R> rxSwitcher, Subscriber<R> subscriber) {
         return changeDataList(iterable)
                 .compose(RxHelper.handleResult(rxSwitcher))
                 .subscribe(subscriber);
@@ -44,7 +45,7 @@ public class RxSchedulersHelper {
      * @param <T> 被存储数据的泛型
      * @return 事件订阅，可用于拦截事件
      */
-    public static <T> Subscription saveDataListToSql(Iterable<? extends T> iterable, RxSqlComputation<T> rxSqlComputation, RxSubscriber<T> subscriber) {
+    public static <T> Subscription saveDataListToSql(Iterable<? extends T> iterable, RxSqlComputation<T> rxSqlComputation, Subscriber<T> subscriber) {
         return Observable.from(iterable)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(rxSqlComputation)
