@@ -1,5 +1,6 @@
 package com.code4a.simpleapi;
 
+import android.content.Context;
 import android.util.Log;
 import com.code4a.retrofitutil.engine.RetrofitManager;
 import com.code4a.retrofitutil.rx.RxHelper;
@@ -20,9 +21,11 @@ public class Code4aApiImpl implements Code4aApi {
 
     RetrofitManager retrofitManager;
 
-    public Code4aApiImpl() {
+    public Code4aApiImpl(Context context) {
         retrofitManager = new RetrofitManager.Builder()
+                .setContext(context)
                 .setBaseUrl(SimpleApi.CODE4A_API)
+                .enableCache()
                 .setTimeoutSec(15)
                 .setTransferDataType(RetrofitManager.Builder.TransferDataType.GSON)
                 .setHttpHeaderMap(HttpUtil.getJsonHeaderMap())

@@ -5,7 +5,7 @@
 
 1.在项目Module的`build.gradle`中添加依赖
 
-`compile 'com.code4a:retrofit-util:1.0.6'`
+`compile 'com.code4a:retrofit-util:1.1.0'`
 
 2.创建RetrofitManager对象
 
@@ -14,7 +14,9 @@ RetrofitManager retrofitManager;
 
 public Code4aApiImpl() {
     retrofitManager = new RetrofitManager.Builder()
+            .setContext(context)
             .setBaseUrl(SimpleApi.CODE4A_API)
+            .enableCache()
             .setTimeoutSec(15)
             .setTransferDataType(RetrofitManager.Builder.TransferDataType.GSON)
             .setHttpHeaderMap(HttpUtil.getJsonHeaderMap())

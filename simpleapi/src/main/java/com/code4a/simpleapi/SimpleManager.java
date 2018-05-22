@@ -14,7 +14,7 @@ public final class SimpleManager {
 
     public static void init(Context mContext) {
         RetrofitManager.initStetho(mContext);
-        code4aApi = new Code4aApiImpl();
+        code4aApi = new Code4aApiImpl(mContext);
     }
 
     public static Code4aApi getCode4aApi() {

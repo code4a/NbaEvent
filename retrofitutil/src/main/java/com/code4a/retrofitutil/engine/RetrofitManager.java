@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.code4a.retrofitutil.bean.ResponseBase;
+import com.code4a.retrofitutil.cache.CacheConfig;
+import com.code4a.retrofitutil.cache.CacheConfigHelper;
+import com.code4a.retrofitutil.cache.CacheManager;
 import com.code4a.retrofitutil.rx.RxHelper;
 import com.code4a.retrofitutil.rx.RxSubscriber;
 import com.code4a.retrofitutil.service.BaseService;
@@ -15,6 +18,8 @@ import com.facebook.stetho.Stetho;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.Cache;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -227,6 +232,8 @@ public final class RetrofitManager {
         private HttpType httpType;
         private TransferDataType transferDataType;
         private SSLInterface sslInterface;
+        private CacheConfig cacheConfig;
+        private boolean enableCache = false;
 
         public enum HttpType {
             HTTP, HTTPS
@@ -335,6 +342,28 @@ public final class RetrofitManager {
             return this;
         }
 
+        /**
+         * 开启缓存
+         *
+         * @param cacheConfig 缓存机制
+         * @return
+         */
+        public Builder addCache(CacheConfig cacheConfig) {
+            this.enableCache = true;
+            this.cacheConfig = cacheConfig;
+            return this;
+        }
+
+        /**
+         * 开启缓存功能，并使用默认缓存机制
+         *
+         * @return
+         */
+        public Builder enableCache() {
+            this.enableCache = true;
+            return this;
+        }
+
         public RetrofitManager build() {
             checkParams();
             Retrofit retrofit = null;
@@ -347,12 +376,26 @@ public final class RetrofitManager {
                 httpType = HttpType.HTTP;
             }
             if (httpType == HttpType.HTTP) {
-                okHttpClient = okHttpClientEngine.defaultOkHttpClient(timeoutSec);
+                if (enableCache) {
+                    if (cacheConfig == null) {
+                        cacheConfig = new CacheConfigHelper(context);
+                    }
+                    okHttpClient = okHttpClientEngine.defaultOkHttpClient(cacheConfig, timeoutSec);
+                } else {
+                    okHttpClient = okHttpClientEngine.defaultOkHttpClient(timeoutSec);
+                }
             } else if (httpType == HttpType.HTTPS) {
                 if (sslInterface == null) {
                     sslInterface = new SSLHelper(context, hostnameVerifiers, assetCertificateName);
                 }
-                okHttpClient = okHttpClientEngine.httpsOkHttpClient(sslInterface, timeoutSec);
+                if (enableCache) {
+                    if (cacheConfig == null) {
+                        cacheConfig = new CacheConfigHelper(context);
+                    }
+                    okHttpClient = okHttpClientEngine.httpsOkHttpClient(sslInterface, cacheConfig, timeoutSec);
+                } else {
+                    okHttpClient = okHttpClientEngine.httpsOkHttpClient(sslInterface, timeoutSec);
+                }
             }
             if (transferDataType == null) {
                 transferDataType = TransferDataType.DEFAULT;
@@ -381,6 +424,10 @@ public final class RetrofitManager {
                 }
                 if (hostnameVerifiers == null) {
                     throw new RuntimeException("Please call setHostnameVerifiers method, hostnameVerifiers can't be null");
+                }
+            } else if (enableCache) {
+                if (context == null) {
+                    throw new RuntimeException("Please call setContext method, context can't be null");
                 }
             }
         }

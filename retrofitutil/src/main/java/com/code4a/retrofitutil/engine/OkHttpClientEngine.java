@@ -1,6 +1,6 @@
 package com.code4a.retrofitutil.engine;
 
-import com.code4a.retrofitutil.ssl.SSLHelper;
+import com.code4a.retrofitutil.cache.CacheConfig;
 import com.code4a.retrofitutil.ssl.SSLInterface;
 import com.code4a.retrofitutil.utils.LogUtil;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -27,6 +27,23 @@ class OkHttpClientEngine {
         this.httpHeaderMap = httpHeaderMap;
     }
 
+    OkHttpClient httpsOkHttpClient(SSLInterface sslHelper, CacheConfig cacheConfig, int timeoutSec) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(getHttpLoggingInterceptor())
+                .addInterceptor(getHttpHeaderInterceptor())
+                .addNetworkInterceptor(new StethoInterceptor())
+                .hostnameVerifier(sslHelper.getHostnameVerifier())
+                .cache(cacheConfig.getCache())
+                .addInterceptor(cacheConfig.getOfflineCacheInterceptor())
+                .addNetworkInterceptor(cacheConfig.getOnlineCacheInterceptor())
+                .sslSocketFactory(sslHelper.getSSLCertification(), sslHelper.getX509TrustManager())
+                .connectTimeout(timeoutSec, TimeUnit.SECONDS)
+                .writeTimeout(timeoutSec, TimeUnit.SECONDS)
+                .readTimeout(timeoutSec, TimeUnit.SECONDS)
+                .build();
+        return client;
+    }
+
     OkHttpClient httpsOkHttpClient(SSLInterface sslHelper, int timeoutSec) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(getHttpLoggingInterceptor())
@@ -34,6 +51,21 @@ class OkHttpClientEngine {
                 .addNetworkInterceptor(new StethoInterceptor())
                 .hostnameVerifier(sslHelper.getHostnameVerifier())
                 .sslSocketFactory(sslHelper.getSSLCertification(), sslHelper.getX509TrustManager())
+                .connectTimeout(timeoutSec, TimeUnit.SECONDS)
+                .writeTimeout(timeoutSec, TimeUnit.SECONDS)
+                .readTimeout(timeoutSec, TimeUnit.SECONDS)
+                .build();
+        return client;
+    }
+
+    OkHttpClient defaultOkHttpClient(CacheConfig cacheConfig, int timeoutSec) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(getHttpLoggingInterceptor())
+                .addInterceptor(getHttpHeaderInterceptor())
+                .addNetworkInterceptor(new StethoInterceptor())
+                .cache(cacheConfig.getCache())
+                .addInterceptor(cacheConfig.getOfflineCacheInterceptor())
+                .addNetworkInterceptor(cacheConfig.getOnlineCacheInterceptor())
                 .connectTimeout(timeoutSec, TimeUnit.SECONDS)
                 .writeTimeout(timeoutSec, TimeUnit.SECONDS)
                 .readTimeout(timeoutSec, TimeUnit.SECONDS)
