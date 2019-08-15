@@ -30,7 +30,7 @@ public class RxSchedulersHelper {
      * @param subscriber 观察者
      * @param <T>        被变换的泛型
      * @param <R>        变换结果的泛型
-     * 
+     *
      */
     public static <T, R> void changeDataList(Iterable<? extends T> iterable, RxSwitcher<T, R> rxSwitcher, Observer<R> subscriber) {
         changeDataList(iterable)
@@ -45,7 +45,7 @@ public class RxSchedulersHelper {
      * @param rxSqlComputation 数据存储接口
      * @param subscriber       观察者
      * @param <T>              被存储数据的泛型
-     * 
+     *
      */
     public static <T> void saveDataListToSql(Iterable<? extends T> iterable, RxSqlComputation<T> rxSqlComputation, Observer<T> subscriber) {
         Observable.fromIterable(iterable)

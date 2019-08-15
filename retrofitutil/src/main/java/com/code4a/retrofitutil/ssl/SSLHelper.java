@@ -42,6 +42,7 @@ public class SSLHelper implements SSLInterface {
      *
      * @return 证书工厂
      */
+    @Override
     public SSLSocketFactory getSSLCertification() {
         SSLSocketFactory sslSocketFactory = null;
         try {
@@ -81,6 +82,7 @@ public class SSLHelper implements SSLInterface {
      *
      * @return 域名验证
      */
+    @Override
     public HostnameVerifier getHostnameVerifier() {
         HostnameVerifier TRUSTED_VERIFIER = new HostnameVerifier() {
             @Override
@@ -98,6 +100,7 @@ public class SSLHelper implements SSLInterface {
         return TRUSTED_VERIFIER;
     }
 
+    @Override
     public X509TrustManager getX509TrustManager() {
         X509TrustManager manager = new X509TrustManager() {
             @Override
